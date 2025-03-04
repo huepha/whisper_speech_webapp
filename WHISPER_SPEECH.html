@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags for character encoding and responsive design -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title of the webpage -->
+    <title>WHISPER</title>
+    <!-- Internal CSS for styling the page -->
+    <style>
+        /* Define CSS variables for consistent color usage */
+        :root {
+            --primary-color: #0ff; /* Cyan color */
+            --secondary-color: #0f0; /* Green color */
+            --bg-color: #000; /* Black background */
+        }
+        /* Body styling */
+        body {
+            font-family: 'Courier New', monospace; /* Monospace font for a techy look */
+            margin: 20px; /* Margin around the body */
+            background-color: var(--bg-color); /* Black background */
+            color: var(--primary-color); /* Cyan text color */
+        }
+        /* Styling for the ASCII art sections */
+        .cyber-ascii {
+            color: var(--primary-color); /* Cyan color for ASCII art */
+            white-space: pre; /* Preserve whitespace for ASCII art */
+            font-size: 12px; /* Small font size for ASCII art */
+            text-align: center; /* Center-align ASCII art */
+            margin: 20px 0; /* Margin around ASCII art */
+        }
+        /* Styling for button groups */
+        .button-group {
+            display: flex; /* Flexbox for button layout */
+            gap: 10px; /* Space between buttons */
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            margin: 20px 0; /* Margin around button groups */
+        }
+        /* Styling for buttons */
+        button {
+            padding: 12px 24px; /* Padding inside buttons */
+            font-size: 16px; /* Font size for button text */
+            cursor: pointer; /* Pointer cursor on hover */
+            background: #111; /* Dark background for buttons */
+            color: var(--primary-color); /* Cyan text color */
+            border: 1px solid var(--primary-color); /* Cyan border */
+            transition: all 0.3s ease; /* Smooth transition for hover effects */
+        }
+        /* Hover effect for buttons */
+        button:hover {
+            background: var(--primary-color); /* Cyan background on hover */
+            color: #000; /* Black text on hover */
+        }
+        /* Utility class to hide elements */
+        .hidden {
+            display: none;
+        }
+        /* Styling for loading messages */
+        .loading {
+            margin: 20px 0; /* Margin around loading messages */
+            font-size: 16px; /* Font size for loading text */
+            color: var(--secondary-color); /* Green color for loading text */
+        }
+        /* Styling for transcription display and editable textarea */
+        #transcription, #editableTranscription {
+            width: 100%; /* Full width */
+            max-width: 800px; /* Maximum width */
+            margin: 20px 0; /* Margin around the elements */
+            background: #111; /* Dark background */
+            color: var(--primary-color); /* Cyan text color */
+            border: 1px solid var(--secondary-color); /* Green border */
+            padding: 15px; /* Padding inside the elements */
+        }
+        /* Additional styling for the editable textarea */
+        #editableTranscription {
+            height: 150px; /* Fixed height */
+        }
+        /* Styling for the audio player */
+        #audioPlayer {
+            margin: 20px 0; /* Margin around the audio player */
+            width: 100%; /* Full width */
+            max-width: 800px; /* Maximum width */
+        }
+        /* Styling for the voice input field */
+        #voiceInput {
+            margin: 10px 0; /* Margin around the input */
+            padding: 8px; /* Padding inside the input */
+            background: #111; /* Dark background */
+            border: 1px solid var(--primary-color); /* Cyan border */
+            color: var(--primary-color); /* Cyan text color */
+        }
+        /* Responsive design for smaller screens */
+        @media (max-width: 600px) {
+            body {
+                margin: 10px; /* Smaller margin on small screens */
+            }
+            button {
+                width: 100%; /* Full-width buttons on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ASCII art for visual appeal -->
+    <div class="cyber-ascii">
+██╗    ██╗██╗  ██╗██╗███████╗██████╗ ███████╗██████╗
+██║    ██║██║  ██║██║██╔════╝██╔══██╗██╔════╝██╔══██╗
+██║ █╗ ██║███████║██║███████╗██████╔╝█████╗  ██████╔╝
+██║███╗██║██╔══██║██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗
+╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║
+╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
+    </div>
+    <!-- Main heading -->
+    <h1>WHISPER & SPEECH</h1>
+    <!-- Button group for recording and clearing -->
+    <div class="button-group">
+        <button id="recordButton">Record</button>
+        <button id="clearButton">Clear</button>
+    </div>
+    <!-- Timer display -->
+    <div id="timer">00:00</div>
+    <!-- Loading message for transcription -->
+    <div id="loading" class="loading hidden">Transcribing...</div>
+    <!-- Display area for transcription -->
+    <div id="transcription"></div>
+    <!-- Button group for editing transcription -->
+    <div class="button-group">
+        <button id="editButton">Edit Transcription</button>
+        <button id="confirmEditButton" class="hidden">Confirm Edit</button>
+    </div>
+    <!-- Textarea for editing transcription -->
+    <textarea id="editableTranscription" class="hidden" placeholder="Edit the transcription here..."></textarea>
+    <!-- Input field for voice selection -->
+    <div>
+        <label for="voiceInput">Voice:</label>
+        <input type="text" id="voiceInput" placeholder="taylor01">
+    </div>
+    <!-- Button group for text-to-speech conversion -->
+    <div class="button-group">
+        <button id="ttsButton">Convert to Speech</button>
+    </div>
+    <!-- Loading message for text-to-speech conversion -->
+    <div id="ttsLoading" class="loading hidden">Generating audio...</div>
+    <!-- Audio player for playback -->
+    <audio id="audioPlayer" class="hidden" controls></audio>
+    <!-- Download link for generated audio -->
+    <a id="downloadLink" class="hidden">Download Audio</a>
+    <!-- ASCII art for visual appeal -->
+    <div class="cyber-ascii">
+███████╗██████╗ ███████╗███████╗ ██████╗██╗  ██╗
+██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝██║  ██║
+███████╗██████╔╝█████╗  █████╗  ██║     ███████║
+╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║     ██╔══██║
+███████║██║     ███████╗███████╗╚██████╗██║  ██║
+╚══════╝╚═╝     ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝
+    </div>
+    <!-- JavaScript for functionality -->
+    <script>
+        (() => {
+            // Cached DOM Elements
+            const elements = {
+                recordButton: document.getElementById("recordButton"),
+                clearButton: document.getElementById("clearButton"),
+                ttsButton: document.getElementById("ttsButton"),
+                editButton: document.getElementById("editButton"),
+                confirmEditButton: document.getElementById("confirmEditButton"),
+                ttsLoading: document.getElementById("ttsLoading"),
+                audioPlayer: document.getElementById("audioPlayer"),
+                downloadLink: document.getElementById("downloadLink"),
+                voiceInput: document.getElementById("voiceInput"),
+                transcriptionDiv: document.getElementById("transcription"),
+                editableTranscription: document.getElementById("editableTranscription"),
+                timer: document.getElementById("timer"),
+                loading: document.getElementById("loading")
+            };
+            // State Management
+            const state = {
+                mediaRecorder: null, // MediaRecorder instance
+                audioChunks: [], // Array to store audio chunks
+                isRecording: false, // Recording state
+                timerInterval: null, // Timer interval
+                transcriptionText: "" // Transcription text
+            };
+            // Utility Functions
+            const toggleElement = (element, show) => element.classList.toggle('hidden', !show);
+            const updateTranscriptionDisplay = () => {
+                elements.transcriptionDiv.textContent = `Transcription: ${state.transcriptionText}`;
+            };
+            // Optimized Timer
+            const startTimer = () => {
+                let start = performance.now();
+                state.timerInterval = setInterval(() => {
+                    const elapsed = performance.now() - start;
+                    elements.timer.textContent = new Date(elapsed).toISOString().substr(14, 5);
+                }, 1000);
+            };
+            const stopTimer = () => {
+                clearInterval(state.timerInterval);
+                elements.timer.textContent = "00:00";
+            };
+            // Media Cleanup
+            const stopRecording = () => {
+                if (state.mediaRecorder?.stream) {
+                    state.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+            };
+            // Audio Processing
+            const handleAudioData = async () => {
+                toggleElement(elements.loading, true);
+                try {
+                    const formData = new FormData();
+                    formData.append("file", new Blob(state.audioChunks, { type: "audio/wav" }), "recording.wav");
+                    const response = await fetch("https://*******WHISPER_SERVER_URL*******/audio/transcriptions", {
+                        method: "POST",
+                        body: formData
+                    });
+                    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+                    const { text } = await response.json();
+                    state.transcriptionText = text?.trim() || "No transcription found";
+                    updateTranscriptionDisplay();
+                } catch (error) {
+                    console.error("Processing error:", error);
+                    elements.transcriptionDiv.textContent = "Error: Failed to process audio.";
+                } finally {
+                    toggleElement(elements.loading, false);
+                }
+            };
+            // Event Handlers
+            const handleRecord = async () => {
+                if (state.isRecording) {
+                    stopRecording();
+                    state.mediaRecorder.stop();
+                    state.isRecording = false;
+                    elements.recordButton.textContent = "Record";
+                    stopTimer();
+                } else {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        state.mediaRecorder = new MediaRecorder(stream);
+                        state.audioChunks = [];
+                        state.mediaRecorder.ondataavailable = e => state.audioChunks.push(e.data);
+                        state.mediaRecorder.onstop = handleAudioData;
+                        state.mediaRecorder.start();
+                        state.isRecording = true;
+                        elements.recordButton.textContent = "Stop";
+                        startTimer();
+                    } catch (error) {
+                        console.error("Microphone error:", error);
+                        elements.transcriptionDiv.textContent = "Microphone access required.";
+                    }
+                }
+            };
+            const handleTTS = async () => {
+                if (!state.transcriptionText.trim()) {
+                    alert("Please transcribe audio first.");
+                    return;
+                }
+                toggleElement(elements.ttsLoading, true);
+                elements.ttsButton.disabled = true;
+                try {
+                    const response = await fetch("https://*******OPENAI_SPEECH_SERVER_URL*******/v1/audio/speech", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer sk-111111111",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            model: "tts-1-hd",
+                            input: state.transcriptionText,
+                            voice: elements.voiceInput.value.trim() || "taylor01",
+                            response_format: "mp3"
+                        })
+                    });
+                    if (!response.ok) throw new Error(`TTS Error: ${response.status}`);
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    elements.audioPlayer.src = audioUrl;
+                    elements.downloadLink.href = audioUrl;
+                    elements.downloadLink.download = `speech_${Date.now()}.mp3`;
+                    toggleElement(elements.audioPlayer, true);
+                    toggleElement(elements.downloadLink, true);
+                } catch (error) {
+                    console.error("TTS failed:", error);
+                    alert("Speech generation failed.");
+                } finally {
+                    toggleElement(elements.ttsLoading, false);
+                    elements.ttsButton.disabled = false;
+                }
+            };
+            // Event Listeners
+            elements.recordButton.addEventListener("click", handleRecord);
+            elements.clearButton.addEventListener("click", () => {
+                state.transcriptionText = "";
+                updateTranscriptionDisplay();
+                elements.editableTranscription.value = "";
+                toggleElement(elements.editableTranscription, false);
+                toggleElement(elements.confirmEditButton, false);
+                toggleElement(elements.editButton, true);
+            });
+            elements.editButton.addEventListener("click", () => {
+                elements.editableTranscription.value = state.transcriptionText;
+                toggleElement(elements.editableTranscription, true);
+                toggleElement(elements.confirmEditButton, true);
+                toggleElement(elements.editButton, false);
+            });
+            elements.confirmEditButton.addEventListener("click", () => {
+                state.transcriptionText = elements.editableTranscription.value.trim();
+                updateTranscriptionDisplay();
+                toggleElement(elements.editableTranscription, false);
+                toggleElement(elements.confirmEditButton, false);
+                toggleElement(elements.editButton, true);
+            });
+            elements.ttsButton.addEventListener("click", handleTTS);
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                stopRecording();
+                clearInterval(state.timerInterval);
+            });
+        })();
+    </script>
+</body>
+</html>
