@@ -15,10 +15,10 @@ To run this web app, you need to set up two servers:
 2. **OpenAI Speech-Compatible Server**: For text-to-speech conversion.
 
 ### 1. Setting Up the Whisper Server
-Follow the instructions in the [OpenAI Whisper GitHub repository](https://github.com/openai/whisper) to set up the Whisper server. Once the server is running, note the API endpoint (e.g., `http://localhost:5000/audio/transcriptions`).
+Follow the instructions in the [OpenAI Whisper GitHub repository](https://github.com/openai/whisper) to set up the Whisper server. Once the server is running, note the API endpoint (e.g., `https://localhost:5000/audio/transcriptions`).
 
 ### 2. Setting Up the OpenAI Speech-Compatible Server
-Follow the instructions in the [OpenAI Speech-Compatible Server GitHub repository](https://github.com/matatonic/openedai-speech) to set up the text-to-speech server. Once the server is running, note the API endpoint (e.g., `http://localhost:3000/v1/audio/speech`).
+Follow the instructions in the [OpenAI Speech-Compatible Server GitHub repository](https://github.com/matatonic/openedai-speech) to set up the text-to-speech server. Once the server is running, note the API endpoint (e.g., `https://localhost:8000/v1/audio/speech`).
 
 ## Running the Web App
 1. Clone this repository:
